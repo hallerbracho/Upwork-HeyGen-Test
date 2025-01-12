@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCORM Package Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            max-width: 90%;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="url"],
+        input[type="range"] {
+            width: calc(100% - 12px);
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #porcentajeValor {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        @media (max-width: 450px) {
+            form {
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>SCORM Package Generator</h1>
+
+    <form id="scormForm">        
+
+        <label for="videoUrl">Video URL:</label><br>
+        <input type="url" id="videoUrl" name="videoUrl" required><br><br>
+
+        <label for="completionPercentage">Completion Percentage:</label>
+        <input type="range" id="completionPercentage" name="completionPercentage" min="50" max="100" value="80">
+        <span id="porcentajeValor">80%</span><br><br>
+        
+        <label for="scormVersion">SCORM Version:</label><br>
+        <select id="scormVersion" name="scormVersion">
+            <option value="1.2">SCORM 1.2</option>
+            <option value="2004">SCORM 2004</option>
+        </select><br><br>
+
+        <button type="button" onclick="generarSCORM()">Generate SCORM Package</button>
+    </form>
+
+    <script>
+        const slider = document.getElementById("completionPercentage");
+        const valorPorcentaje = document.getElementById("porcentajeValor");
+
+        slider.oninput = function() {
+            valorPorcentaje.innerHTML = this.value + "%";
+        }
+
+        async function generarSCORM() {
+            const scormVersion = document.getElementById("scormVersion").value;
+            const videoUrl = document.getElementById("videoUrl").value;
+            const completionPercentage = document.getElementById("completionPercentage").value;
+
+            try {
+                // Seleccionar la plantilla index.html correcta
+                let indexFilename = "index.html"; // Default (puede que no se use)
+                if (scormVersion === "1.2") {
+                    indexFilename = "index12.html";
+                } else if (scormVersion === "2004") {
+                    indexFilename = "index2004.html";
+                }
+
+                let indexContent;
+                try{
+                    const indexResponse = await fetch(indexFilename);
+                    indexContent = await indexResponse.text();
+                } catch(error){
+                    console.error("Error al obtener el index:", error);
+                    alert("No se encontro el archivo "+ indexFilename);
+                    return;
+                }
+
+
+
+                indexContent = indexContent.replace("{{videoUrl}}", videoUrl);
+                indexContent = indexContent.replace("{{completionPercentage}}", completionPercentage);
+
+                const zip = new JSZip();
+
+                zip.file("index.html", indexContent); // El archivo dentro del zip se llama index.html siempre
+
+                const apiScormResponse = await fetch('APISCORM.js');
+                const apiScormContent = await apiScormResponse.text();
+                zip.file("APISCORM.js", apiScormContent);
+
+                let imsManifestFilename = "imsmanifest.xml";
+                if (scormVersion === "1.2") {
+                    imsManifestFilename = "imsmanifest12.xml";
+                } else if (scormVersion === "2004") {
+                    imsManifestFilename = "imsmanifest2004.xml";
+                }
+                try{
+                    const imsManifestResponse = await fetch(imsManifestFilename);
+                    const imsManifestContent = await imsManifestResponse.text();
+                    zip.file("imsmanifest.xml", imsManifestContent);
+                } catch(error){
+                    console.error("Error al obtener el imsmanifest:", error);
+                    alert("No se encontro el archivo "+ imsManifestFilename);
+                    return;
+                }
+
+                const blob = await zip.generateAsync({ type: "blob" });
+
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = 'scorm_package.zip';
+                link.click();
+                URL.revokeObjectURL(link.href);
+
+            } catch (error) {
+                console.error("Error generating SCORM package:", error);
+                alert("An error occurred generating the SCORM package. Check the console for details.");
+            }
+        }
+    </script>
+</body>
+</html>
