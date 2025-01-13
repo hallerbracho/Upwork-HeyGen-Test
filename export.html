@@ -116,8 +116,8 @@
                     const indexResponse = await fetch(indexFilename);
                     indexContent = await indexResponse.text();
                 } catch(error){
-                    console.error("Error al obtener el index:", error);
-                    alert("No se encontro el archivo "+ indexFilename);
+                    console.error("Failed to retrieve the index:", error);
+                    alert("File not found: "+ indexFilename);
                     return;
                 }
 
@@ -145,8 +145,8 @@
                     const imsManifestContent = await imsManifestResponse.text();
                     zip.file("imsmanifest.xml", imsManifestContent);
                 } catch(error){
-                    console.error("Error al obtener el imsmanifest:", error);
-                    alert("No se encontro el archivo "+ imsManifestFilename);
+                    console.error("Failed to retrieve the imsmanifest:", error);
+                    alert("File not found: "+ imsManifestFilename);
                     return;
                 }
 
