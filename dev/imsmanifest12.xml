@@ -14,7 +14,7 @@
 		<organization identifier="B0">
 			<title>{{courseName}}</title> 
 			<item identifier="i1" identifierref="r1" isvisible="true">
-				<title>Video Course</title> 
+				<title>Video</title> 
 			</item>
 		</organization>
 	</organizations>
