@@ -12,9 +12,9 @@
 	</metadata>
 	<organizations default="B0">
 		<organization identifier="B0">
-			<title>HeyGen</title> 
+			<title>{{courseName}}</title> 
 			<item identifier="i1" identifierref="r1" isvisible="true">
-				<title>HeyGen</title> 
+				<title>Video Course</title> 
 			</item>
 		</organization>
 	</organizations>
