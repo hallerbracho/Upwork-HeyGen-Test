@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>HeyGen</title>
+	<style>
+		.video-container {
+	  	max-width: 960px;
+	  	margin: 20px auto;
+	  	border-radius: 8px;
+	  	overflow: hidden;
+	  	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+		}
+	
+		.video-container video {
+	  	display: block;
+	  	width: 100%;
+		}
+	
+		.video-container video::-webkit-media-controls {
+	  	background: rgba(0, 0, 0, 0.3);
+		}
+	</style>
+	<script type="text/javascript" src="APISCORM.js"></script>
+</head>
+
+<body>
+
+<div class="video-container">
+	<video id="miVideo" autoplay controls>
+		<source src="{{videoUrl}}" type="video/mp4">
+    	Your browser does not support HTML5 video.
+	</video>
+</div>
+
+	<script>    
+    var scorm = pipwerks.SCORM; 
+    if(scorm.init()) {
+    
+        var percentage = {{completionPercentage}};
+        var video = document.getElementById('miVideo');        
+        var completado = false;        
+        var unloaded = false;
+        var visto = 0;
+        
+        video.addEventListener('loadedmetadata', function() {
+    		console.log(video.duration);
+		});
+
+        video.addEventListener('timeupdate', function() {        
+            if (!completado && video.currentTime / video.duration >= percentage/100) {
+                scorm.set("cmi.core.lesson_status", "passed");
+                scorm.set("cmi.core.lesson_status", "completed");                
+                scorm.set("cmi.core.exit", "suspend");                
+                scorm.save();                
+                completado = true;                
+            }
+        });
+
+        video.addEventListener('ended', function() {
+            if (!completado) {
+                scorm.set("cmi.core.lesson_status", "failed");                
+                scorm.set("cmi.core.exit", "suspend");
+                scorm.save();
+                scorm.quit();
+                completado = true;
+            }
+        });
+        
+
+        window.addEventListener('beforeunload', function (e) {
+        	visto = (video.currentTime / video.duration)*100
+            if (!unloaded) {
+                var lessonStatus = completado ? "passed" : "failed";
+                var score = completado ? visto : 0;
+                scorm.set("cmi.core.lesson_status", lessonStatus);
+                scorm.set("cmi.student_data.mastery_score", percentage);
+                scorm.set("cmi.core.score.raw", score);
+                scorm.set("cmi.core.exit", "suspend");
+                scorm.save();
+                scorm.quit();                
+                unloaded = true;
+            }
+        });
+    } else {
+        console.error("Error initializing SCORM.");
+    }
+	</script>
+</body>
+</html>
