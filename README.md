@@ -1,2 +1,2 @@
 # Upwork-HeyGen-Test
-[Export](export.html)
+[SCORM Package Generator](export.html)
