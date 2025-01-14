@@ -19,7 +19,7 @@
     <organization identifier="B0" adlseq:objectivesGlobalToSystem="false">
       <title>{{courseName}}</title>
       <item identifier="i1" identifierref="r1" isvisible="true">
-        <title>Video Course</title>
+        <title>Video</title>
       </item>
     </organization>
   </organizations>
