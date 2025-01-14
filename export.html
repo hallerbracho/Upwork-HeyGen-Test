@@ -32,8 +32,7 @@
             display: block;
             margin-bottom: 5px;
             font-weight: bold;
-        }        
-        input[type="text"],
+        }
         input[type="url"],
         input[type="range"] {
             width: calc(100% - 12px);
@@ -74,21 +73,18 @@
 
     <form id="scormForm">        
 
-        <label for="courseName">Course/Video Name:</label><br>
-        <input type="text" id="courseName" name="courseName" required><br><br>
+        <label for="videoUrl">Video URL:</label><br>
+        <input type="url" id="videoUrl" name="videoUrl" required><br><br>
 
+        <label for="completionPercentage">Completion Percentage:</label>
+        <input type="range" id="completionPercentage" name="completionPercentage" min="50" max="100" value="80">
+        <span id="porcentajeValor">80%</span><br><br>
+        
         <label for="scormVersion">SCORM Version:</label><br>
         <select id="scormVersion" name="scormVersion">
             <option value="1.2">SCORM 1.2</option>
             <option value="2004">SCORM 2004</option>
         </select><br><br>
-
-        <label for="videoUrl">Video URL:</label><br>
-        <input type="url" id="videoUrl" name="videoUrl" required placeholder="Enter video URL"><br><br>
-
-        <label for="completionPercentage">Completion Percentage:</label><br>
-        <input type="range" id="completionPercentage" name="completionPercentage" min="50" max="100" value="80"><br>
-        <span id="porcentajeValor">80%</span><br><br>
 
         <button type="button" onclick="generarSCORM()">Generate SCORM Package</button>
     </form>
@@ -101,14 +97,14 @@
             valorPorcentaje.innerHTML = this.value + "%";
         }
 
-        async function generarSCORM() {            
-            const courseName = document.getElementById("courseName").value;
+        async function generarSCORM() {
             const scormVersion = document.getElementById("scormVersion").value;
             const videoUrl = document.getElementById("videoUrl").value;
             const completionPercentage = document.getElementById("completionPercentage").value;
 
             try {
-                let indexFilename = "index.html";
+                // Seleccionar la plantilla index.html correcta
+                let indexFilename = "index.html"; // Default (puede que no se use)
                 if (scormVersion === "1.2") {
                     indexFilename = "index12.html";
                 } else if (scormVersion === "2004") {
@@ -120,17 +116,19 @@
                     const indexResponse = await fetch(indexFilename);
                     indexContent = await indexResponse.text();
                 } catch(error){
-                    console.error("Error al obtener el index:", error);
-                    alert("No se encontro el archivo "+ indexFilename);
+                    console.error("Failed to retrieve the index:", error);
+                    alert("File not found: "+ indexFilename);
                     return;
                 }
+
+
 
                 indexContent = indexContent.replace("{{videoUrl}}", videoUrl);
                 indexContent = indexContent.replace("{{completionPercentage}}", completionPercentage);
 
                 const zip = new JSZip();
 
-                zip.file("index.html", indexContent);
+                zip.file("index.html", indexContent); // El archivo dentro del zip se llama index.html siempre
 
                 const apiScormResponse = await fetch('APISCORM.js');
                 const apiScormContent = await apiScormResponse.text();
@@ -142,17 +140,13 @@
                 } else if (scormVersion === "2004") {
                     imsManifestFilename = "imsmanifest2004.xml";
                 }
-
-                try {
+                try{
                     const imsManifestResponse = await fetch(imsManifestFilename);
-                    let imsManifestContent = await imsManifestResponse.text();
-                    
-                    imsManifestContent = imsManifestContent.replace(/\{\{courseName\}\}/g, courseName);
-
+                    const imsManifestContent = await imsManifestResponse.text();
                     zip.file("imsmanifest.xml", imsManifestContent);
-                } catch (error) {
-                    console.error("Error fetching imsmanifest:", error);
-                    alert("File not found: " + imsManifestFilename);
+                } catch(error){
+                    console.error("Failed to retrieve the imsmanifest:", error);
+                    alert("File not found: "+ imsManifestFilename);
                     return;
                 }
 

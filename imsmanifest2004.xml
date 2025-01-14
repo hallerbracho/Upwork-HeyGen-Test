@@ -17,9 +17,9 @@
   </metadata>
   <organizations default="B0">
     <organization identifier="B0" adlseq:objectivesGlobalToSystem="false">
-      <title>{{courseName}}</title>
+      <title>HeyGen</title>
       <item identifier="i1" identifierref="r1" isvisible="true">
-        <title>Video</title>
+        <title>Video Course</title>
       </item>
     </organization>
   </organizations>
