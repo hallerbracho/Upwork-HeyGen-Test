@@ -1,0 +1,472 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spanish-English widget test for StoryLearning</title>
+    <!-- Fonts loaded externally, Teachable should handle this -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* Prefixed CSS for Teachable Compatibility */
+        :root {
+            --twg-primary-color: #4257b2;
+            --twg-secondary-color: #ffcd1f;
+            --twg-correct-color: #67c29c;
+            --twg-incorrect-color: #ff725b;
+            --twg-light-gray: #f0f0f0;
+            --twg-medium-gray: #ccc;
+            --twg-dark-gray: #555;
+            --twg-widget-background: #ffffff;
+            --twg-border-radius: 6px;
+        }
+
+        /* Apply base styles to the main container */
+        .twg-widget-container {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            background-color: var(--twg-widget-background);
+            color: var(--twg-dark-gray);
+            border: 1px solid #ddd; /* Optional: good for visual separation in Teachable */
+            border-radius: var(--twg-border-radius);
+            overflow: hidden; /* Contain floats/margins */
+             max-width: 700px; /* You can adjust or remove this */
+             margin: auto; /* Centers if width is restricted */
+        }
+
+        /* Inner padding */
+        .twg-widget {
+            padding: 20px; /* Adjust padding as needed */
+        }
+
+        .twg-widget * { /* Ensure box-sizing within widget */
+             box-sizing: border-box;
+        }
+
+
+        .twg-widget h2 {
+            color: var(--twg-primary-color);
+            margin-top: 0; /* Remove default top margin */
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.4em;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--twg-light-gray);
+        }
+
+        .twg-mode-selector {
+            display: flex; flex-wrap: wrap; gap: 10px;
+            margin-bottom: 25px; padding-bottom: 15px;
+            border-bottom: 1px solid var(--twg-light-gray);
+        }
+        .twg-mode-selector button {
+            padding: 10px 18px; border: 1px solid var(--twg-medium-gray);
+            background-color: var(--twg-widget-background); color: var(--twg-dark-gray);
+            cursor: pointer; border-radius: var(--twg-border-radius);
+            font-size: 0.95em; font-weight: 500;
+            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        }
+        .twg-mode-selector button:hover { background-color: var(--twg-light-gray); border-color: #bbb; }
+        .twg-mode-selector button.active { background-color: var(--twg-primary-color); color: white; border-color: var(--twg-primary-color); }
+
+        .twg-mode-content {
+            margin-top: 20px; padding: 20px;
+            border: 1px solid var(--twg-light-gray);
+            background-color: #fdfdfd;
+            min-height: 250px;
+            border-radius: var(--twg-border-radius);
+            position: relative;
+        }
+        .twg-instructions { font-size: 0.9em; color: #666; margin-bottom: 15px; }
+
+        /* Prefixed Styles for Modes */
+        .twg-matching-container { display: flex; justify-content: space-around; gap: 20px; }
+        .twg-matching-column { flex: 1; }
+        .twg-matching-column strong { display: block; margin-bottom: 10px; font-weight: 500; color: var(--twg-primary-color); }
+        .twg-matching-column ul { list-style: none; padding: 0; margin: 0; }
+        .twg-matching-column li { border: 1px solid var(--twg-medium-gray); padding: 12px; margin-bottom: 8px; cursor: pointer; background-color: var(--twg-widget-background); border-radius: var(--twg-border-radius); transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.1s ease; }
+        .twg-matching-column li:hover { background-color: var(--twg-light-gray); border-color: #bbb; }
+        .twg-matching-column li.selected { background-color: var(--twg-secondary-color); border-color: #e6b800; transform: scale(1.02); }
+        .twg-matching-column li.matched-correct { background-color: #e0f2e9; border-color: var(--twg-correct-color); cursor: default; opacity: 0.7; }
+        .twg-matching-column li.matched-correct:hover { transform: none; }
+
+        .twg-multiple-choice-question { margin-bottom: 15px; font-weight: 500; }
+        .twg-multiple-choice-options { display: flex; flex-direction: column; gap: 10px; }
+        .twg-multiple-choice-option label { display: block; padding: 12px; border: 1px solid var(--twg-medium-gray); border-radius: var(--twg-border-radius); cursor: pointer; transition: background-color 0.2s ease, border-color 0.2s ease; }
+        .twg-multiple-choice-option label:hover { background-color: var(--twg-light-gray); border-color: #bbb; }
+        .twg-multiple-choice-option input[type="radio"] { opacity: 0; position: fixed; width: 0; }
+        .twg-multiple-choice-option input[type="radio"]:checked + label { background-color: var(--twg-secondary-color); border-color: #e6b800; font-weight: 500; }
+
+        .twg-spell-definition { margin-bottom: 15px; font-weight: 500; }
+        .twg-spell-audio-button { cursor: pointer; background: none; border: none; font-size: 1.5em; vertical-align: middle; margin-right: 10px; color: var(--twg-primary-color); padding: 0; }
+        .twg-spell-audio-button:hover { color: #36499b; }
+        .twg-spell-input-container { display: flex; gap: 10px; align-items: center; }
+        .twg-spell-input { padding: 12px; border: 1px solid var(--twg-medium-gray); border-radius: var(--twg-border-radius); flex-grow: 1; font-size: 1em; }
+        .twg-spell-input:focus { outline: none; border-color: var(--twg-primary-color); box-shadow: 0 0 0 2px rgba(66, 87, 178, 0.2); }
+
+        .twg-check-button { padding: 12px 20px; background-color: var(--twg-primary-color); color: white; border: none; border-radius: var(--twg-border-radius); cursor: pointer; font-size: 1em; font-weight: 500; transition: background-color 0.2s ease; }
+        .twg-check-button:hover { background-color: #36499b; }
+        .twg-check-button:disabled { background-color: var(--twg-medium-gray); cursor: not-allowed; }
+
+        .twg-flashcard-container { perspective: 1000px; min-height: 200px; display: flex; align-items: center; justify-content: center; }
+        .twg-flashcard { width: 80%; max-width: 400px; height: 180px; position: relative; transform-style: preserve-3d; transition: transform 0.6s; cursor: pointer; border: 1px solid var(--twg-medium-gray); border-radius: var(--twg-border-radius); background-color: #fff; }
+        .twg-flashcard.is-flipped { transform: rotateY(180deg); }
+        .twg-flashcard-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; /* Allow button stacking */ align-items: center; justify-content: center; text-align: center; padding: 20px; font-size: 1.2em; border-radius: var(--twg-border-radius); }
+        .twg-flashcard-front { background-color: var(--twg-widget-background); color: var(--twg-dark-gray); }
+        .twg-flashcard-back { background-color: var(--twg-light-gray); color: var(--twg-dark-gray); transform: rotateY(180deg); }
+        .twg-flashcard-nav { margin-top: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .twg-flashcard-nav button { background-color: var(--twg-primary-color); color: white; padding: 8px 15px; font-size: 0.9em;}
+        .twg-flashcard-counter { font-size: 0.9em; color: #666; }
+
+        .twg-feedback { margin-top: 20px; padding: 12px 15px; border-radius: var(--twg-border-radius); font-weight: 500; text-align: center; transition: opacity 0.3s ease; }
+        .twg-feedback.hidden { opacity: 0; height: 0; padding: 0; margin: 0; overflow: hidden; }
+        .twg-feedback.correct { background-color: #e0f2e9; color: #1c7453; border: 1px solid var(--twg-correct-color); }
+        .twg-feedback.incorrect { background-color: #ffe8e5; color: #b84131; border: 1px solid var(--twg-incorrect-color); }
+
+    </style>
+</head>
+<body>
+
+<!-- Container for the whole widget -->
+<div class="twg-widget-container">
+    <div class="twg-widget">
+        <h2 id="twg-widget-title">Interactive Study Widget</h2>
+
+        <div class="twg-mode-selector">
+            <button id="twg-btn-flashcards" onclick="twgApp.switchMode('flashcards')">Flashcards</button>
+            <button id="twg-btn-matching" onclick="twgApp.switchMode('matching')">Matching</button>
+            <button id="twg-btn-multiple-choice" onclick="twgApp.switchMode('multiple-choice')">Multiple Choice</button>
+            <button id="twg-btn-spell" onclick="twgApp.switchMode('spell')">Spell</button>
+        </div>
+
+        <div class="twg-mode-content" id="twg-mode-content">
+            <p class="twg-instructions">Select a mode above to start.</p>
+        </div>
+
+        <div class="twg-feedback hidden" id="twg-feedback"></div>
+    </div>
+</div>
+
+<script>
+// --- IIFE to encapsulate the widget's JavaScript ---
+(function() {
+    // --- Injected Study Set Data ---
+    const studySetData = JSON.parse(`{"id":1,"name":"Spanish-English widget test for StoryLearning","description":"Spanish-English widget test for StoryLearning","items":[{"id":45,"term":"Welcome back!","definition":"¡Bienvenido de nuevo!","audioUrl":"https://hallerbracho.github.io/Upwork-HeyGen-Test/welcomeback.mp3","alternativeAnswers":["Welcome","welcome","welcome back","welcome back! Welcome back!","Welcome back"],"errorFeedback":""},{"id":46,"term":"Ready to start","definition":"Listo para comenzar","audioUrl":"https://hallerbracho.github.io/Upwork-HeyGen-Test/readytostart.mp3","alternativeAnswers":[],"errorFeedback":"Esa es una forma común de expresar que estás preparado. Solo ten cuidado con la concordancia si eres mujer (\\"Lista para comenzar\\"). En inglés, la frase \\"Ready to start\\" no cambia. ¡Sigue practicando!"},{"id":47,"term":"Need anything?","definition":"¿Necesitas algo?","audioUrl":"https://hallerbracho.github.io/Upwork-HeyGen-Test/needanything.mp3","alternativeAnswers":[],"errorFeedback":""},{"id":48,"term":"Everything up to date","definition":"Todo al día","audioUrl":"https://hallerbracho.github.io/Upwork-HeyGen-Test/uptodate.mp3","alternativeAnswers":[],"errorFeedback":""}]}`);
+
+    // --- Widget Logic ---
+    let currentMode = '';
+    let studySet = studySetData.items || [];
+    let activeQuestionData = null;
+    let selectedMatch = { term: null, definition: null };
+    let incorrectTimeout = null;
+    let flashcardIndex = 0;
+    let audioContext;
+    let currentAudio = null;
+
+    // DOM Elements
+    const contentArea = document.getElementById('twg-mode-content');
+    const feedbackArea = document.getElementById('twg-feedback');
+    const widgetTitle = document.getElementById('twg-widget-title');
+    const modeSelector = document.querySelector('.twg-mode-selector'); // For hiding
+
+    // --- Public API for buttons ---
+    // Expose only necessary functions globally via an object
+    window.twgApp = {
+        switchMode: switchMode,
+        selectItem: selectItem,
+        checkMultipleChoice: checkMultipleChoice,
+        checkSpell: checkSpell,
+        playAudio: playAudio, // Make audio playable from generated HTML
+        flipCard: flipCard,
+        navigateFlashcard: navigateFlashcard
+    };
+
+    // --- Initialization ---
+    document.addEventListener('DOMContentLoaded', initWidget);
+    // Handle case where script runs after DOMContentLoaded (less likely when embedded)
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        initWidget();
+    }
+
+
+    function initWidget() {
+        // Prevent double initialization
+        if (window.twgAppInitialized) return;
+        window.twgAppInitialized = true;
+
+        console.log("Initializing Teachable Widget...");
+
+        widgetTitle.textContent = studySetData.name || 'Interactive Study Widget';
+        if (!studySet || studySet.length === 0) {
+             contentArea.innerHTML = '<p class="twg-instructions">Error: No study items found.</p>';
+             if (modeSelector) modeSelector.style.display = 'none';
+             return; // Stop initialization if no data
+        }
+
+        // Try to create AudioContext on first user interaction
+         document.body.addEventListener('click', initAudioContext, { once: true });
+         document.body.addEventListener('touchstart', initAudioContext, { once: true });
+
+         // Load default mode
+         switchMode('flashcards');
+    }
+
+    function initAudioContext() {
+        if (!audioContext) {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                console.log("TWG: AudioContext initialized.");
+            } catch (e) { console.error("TWG: Web Audio API not supported.", e); }
+        }
+    }
+
+    // --- Mode Switching Logic ---
+    function switchMode(mode) {
+        if (!studySet || studySet.length === 0) return;
+        currentMode = mode;
+        console.log(`TWG: Switching to ${mode} mode`);
+        stopCurrentAudio();
+        if (incorrectTimeout) clearTimeout(incorrectTimeout);
+
+        document.querySelectorAll('.twg-mode-selector button').forEach(btn => btn.classList.remove('active'));
+        const activeButton = document.getElementById(`twg-btn-${mode}`);
+        if (activeButton) activeButton.classList.add('active');
+
+        contentArea.innerHTML = '';
+        feedbackArea.textContent = '';
+        feedbackArea.className = 'twg-feedback hidden';
+        selectedMatch = { term: null, definition: null };
+        flashcardIndex = 0;
+
+        switch (mode) {
+            case 'flashcards': renderFlashcardMode(); break;
+            case 'matching': renderMatchingMode(); break;
+            case 'multiple-choice': renderMultipleChoiceMode(); break;
+            case 'spell': renderSpellMode(); break;
+            default: contentArea.innerHTML = '<p class="twg-instructions">Mode not implemented yet.</p>';
+        }
+    }
+
+    // --- Feedback Utility ---
+    function showFeedback(message, type) {
+        feedbackArea.textContent = message;
+        feedbackArea.className = `twg-feedback ${type}`; // Use template literal
+    }
+
+    // --- Audio Playback Utility ---
+    function playAudio(url, buttonElement = null) { // Accept optional button
+        if (!url) { console.warn("TWG: No audio URL."); return; }
+        stopCurrentAudio();
+        if (!audioContext) {
+             initAudioContext(); // Try again
+             if (!audioContext) { console.warn("TWG: AudioContext not ready."); showFeedback("Audio requires interaction.", "incorrect"); return; }
+         }
+
+        // Use HTML5 Audio - simpler & more reliable for cross-origin without CORS issues
+        currentAudio = new Audio(url);
+        if (buttonElement) buttonElement.textContent = '...'; // Indicate loading/playing
+
+        currentAudio.onerror = (e) => { console.error("TWG: Error loading audio:", url, e); showFeedback(`Error loading: ${url}`, "incorrect"); if (buttonElement) buttonElement.textContent = '🔊'; currentAudio = null; };
+        currentAudio.onended = () => { if (buttonElement) buttonElement.textContent = '🔊'; currentAudio = null; };
+        currentAudio.onpause = () => { if (buttonElement) buttonElement.textContent = '🔊'; currentAudio = null; }; // Reset on pause too
+        currentAudio.play().catch(e => { console.error("TWG: Audio playback failed:", e); showFeedback("Audio playback failed.", "incorrect"); if (buttonElement) buttonElement.textContent = '🔊'; currentAudio = null; });
+    }
+
+     function stopCurrentAudio() {
+          if (currentAudio && currentAudio instanceof Audio) {
+              currentAudio.pause();
+              currentAudio.currentTime = 0; // Reset position
+              currentAudio = null;
+              console.log("TWG: Stopped previous audio");
+              // Reset any playing buttons (might need better tracking if multiple buttons exist)
+              document.querySelectorAll('.twg-spell-audio-button').forEach(btn => btn.textContent = '🔊');
+          }
+     }
+
+    // --- Content Rendering Functions (Use twg- prefixes in generated HTML) ---
+     function renderFlashcardMode() {
+         if (!studySet || studySet.length === 0) return;
+         flashcardIndex = 0;
+         displayFlashcard(flashcardIndex);
+     }
+     function displayFlashcard(index) {
+         const item = studySet[index];
+         if (!item) return;
+         // Use 'twgApp.playAudio' and 'twgApp.flipCard', 'twgApp.navigateFlashcard' in onclick attributes
+         let html = `
+            <p class="twg-instructions">Click the card to flip. Use arrows to navigate.</p>
+            <div class="twg-flashcard-container">
+                <div class="twg-flashcard" id="twg-flashcard-${item.id}" onclick="twgApp.flipCard(this)">
+                    <div class="twg-flashcard-face twg-flashcard-front">
+                         ${item.term}
+                         ${item.audioUrl ? `<button class="twg-spell-audio-button" style="font-size: 1em; margin-left: 10px;" onclick="event.stopPropagation(); twgApp.playAudio('${item.audioUrl}', this);">🔊</button>` : ''}
+                    </div>
+                    <div class="twg-flashcard-face twg-flashcard-back">${item.definition}</div>
+                </div>
+            </div>
+            <div class="twg-flashcard-nav">
+                 <button type="button" class="twg-check-button" ${index === 0 ? 'disabled' : ''} onclick="twgApp.navigateFlashcard(-1)">← Prev</button>
+                 <span class="twg-flashcard-counter">${index + 1} / ${studySet.length}</span>
+                 <button type="button" class="twg-check-button" ${index === studySet.length - 1 ? 'disabled' : ''} onclick="twgApp.navigateFlashcard(1)">Next →</button>
+            </div>`;
+         contentArea.innerHTML = html;
+     }
+     function flipCard(cardElement) { cardElement.classList.toggle('is-flipped'); }
+     function navigateFlashcard(direction) {
+         const newIndex = flashcardIndex + direction;
+         if (newIndex >= 0 && newIndex < studySet.length) {
+             flashcardIndex = newIndex;
+             displayFlashcard(flashcardIndex);
+         }
+     }
+
+    function renderMatchingMode() { /* ... use twg- prefixes, call twgApp.selectItem ... */
+        const terms = [...studySet]; const definitions = [...studySet];
+        shuffleArray(terms); shuffleArray(definitions);
+        let html = `
+            <p class="twg-instructions">Click a term and then its matching definition.</p>
+            <div class="twg-matching-container">
+                <div class="twg-matching-column" id="twg-terms-column">
+                    <strong>Terms</strong>
+                    <ul>${terms.map(item => `<li data-id="${item.id}" onclick="twgApp.selectItem('term', this, '${item.id}')">${item.term}</li>`).join('')}</ul>
+                </div>
+                <div class="twg-matching-column" id="twg-definitions-column">
+                    <strong>Definitions</strong>
+                    <ul>${definitions.map(item => `<li data-id="${item.id}" onclick="twgApp.selectItem('definition', this, '${item.id}')">${item.definition}</li>`).join('')}</ul>
+                </div>
+            </div>`;
+        contentArea.innerHTML = html;
+     }
+    function renderMultipleChoiceMode() { /* ... use twg- prefixes, call twgApp.checkMultipleChoice, twgApp.playAudio ... */
+         if (studySet.length < 2) { contentArea.innerHTML = '<p class="twg-instructions">Need at least 2 items for Multiple Choice.</p>'; return; }
+        const correctItem = studySet[Math.floor(Math.random() * studySet.length)];
+        activeQuestionData = correctItem;
+        let options = [correctItem];
+         let numOptions = Math.min(4, studySet.length); // Max 4 options, or less if fewer items
+        while (options.length < numOptions) {
+            let randomItem = studySet[Math.floor(Math.random() * studySet.length)];
+            if (options.every(opt => opt.id !== randomItem.id)) { options.push(randomItem); }
+        }
+        shuffleArray(options);
+        let html = `
+            <p class="twg-multiple-choice-question">What is the definition of: <strong>${correctItem.definition}</strong>?</p>
+            ${correctItem.audioUrl ? `<p><button class="twg-spell-audio-button" onclick="twgApp.playAudio('${correctItem.audioUrl}', this)">🔊 Listen</button></p>` : ''}
+            <div class="twg-multiple-choice-options" id="twg-mc-options-container">`;
+        options.forEach((option, index) => {
+            html += `
+                <div class="twg-multiple-choice-option">
+                    <input type="radio" id="twg-option${index}" name="twg-mc-option" value="${option.id}">
+                    <label for="twg-option${index}">${option.term}</label>
+                </div>`;
+        });
+        html += `</div>
+                 <button id="twg-mc-check-button" class="twg-check-button" onclick="twgApp.checkMultipleChoice()" disabled>Check Answer</button>`;
+        contentArea.innerHTML = html;
+        const optionsContainer = document.getElementById('twg-mc-options-container');
+        const checkButton = document.getElementById('twg-mc-check-button');
+        if (optionsContainer && checkButton) { optionsContainer.addEventListener('change', () => { checkButton.disabled = false; }); }
+     }
+    function renderSpellMode() { /* ... use twg- prefixes, call twgApp.checkSpell, twgApp.playAudio ... */
+         const randomItem = studySet[Math.floor(Math.random() * studySet.length)];
+        activeQuestionData = randomItem;
+        let html = `
+            <p class="twg-instructions">Listen and type what you hear, or type the term for the definition shown.</p>
+            <p class="twg-spell-definition">
+                ${activeQuestionData.audioUrl ? `<button class="twg-spell-audio-button" onclick="twgApp.playAudio('${activeQuestionData.audioUrl}', this)">🔊</button>` : ''}
+                <strong>${activeQuestionData.definition}</strong>
+            </p>
+            <div class="twg-spell-input-container">
+                 <input type="text" id="twg-spell-input" class="twg-spell-input" placeholder="Type the term here..." aria-label="Type the term for ${activeQuestionData.definition}">
+                 <button class="twg-check-button" onclick="twgApp.checkSpell()">Check</button>
+            </div>`;
+        contentArea.innerHTML = html;
+        const inputElement = document.getElementById('twg-spell-input');
+        if (inputElement) { inputElement.addEventListener('keypress', function(event) { if (event.key === 'Enter') { event.preventDefault(); twgApp.checkSpell(); } }); inputElement.focus(); }
+     }
+
+    // --- Answer Checking Functions (Logic mostly unchanged, use twg- selectors if needed) ---
+    function selectItem(type, element, itemId) { /* ... logic ... */
+         if (incorrectTimeout) { clearTimeout(incorrectTimeout); /* ... reset styles ... */ }
+        feedbackArea.className = 'twg-feedback hidden';
+        const columnSelector = (type === 'term') ? '#twg-terms-column' : '#twg-definitions-column';
+        document.querySelectorAll(`${columnSelector} li.selected`).forEach(li => li.classList.remove('selected'));
+        element.classList.add('selected');
+        selectedMatch[type] = { element: element, id: itemId };
+        if (selectedMatch.term && selectedMatch.definition) {
+            const termItem = selectedMatch.term; const definitionItem = selectedMatch.definition;
+            if (termItem.id == definitionItem.id) {
+                showFeedback('Correct Match!', 'correct');
+                termItem.element.classList.remove('selected'); definitionItem.element.classList.remove('selected');
+                termItem.element.classList.add('matched-correct'); definitionItem.element.classList.add('matched-correct');
+                termItem.element.onclick = null; definitionItem.element.onclick = null;
+                 checkAllMatched();
+            } else {
+                showFeedback('Incorrect Match. Try again.', 'incorrect');
+                termItem.element.style.backgroundColor = '#ffe8e5'; definitionItem.element.style.backgroundColor = '#ffe8e5';
+                incorrectTimeout = setTimeout(() => {
+                    termItem.element.classList.remove('selected'); definitionItem.element.classList.remove('selected');
+                    termItem.element.style.backgroundColor = ''; definitionItem.element.style.backgroundColor = '';
+                    feedbackArea.className = 'twg-feedback hidden'; incorrectTimeout = null;
+                }, 1500);
+            }
+            selectedMatch = { term: null, definition: null };
+        }
+     }
+    function checkAllMatched() { /* ... logic ... */
+         const totalItems = studySet.length;
+        const matchedItems = document.querySelectorAll('.twg-matching-column li.matched-correct').length;
+        if (matchedItems === totalItems * 2) { showFeedback('Congratulations! All items matched!', 'correct'); }
+     }
+    function checkMultipleChoice() { /* ... logic ... */
+        const selectedOptionInput = document.querySelector('input[name="twg-mc-option"]:checked');
+        if (!selectedOptionInput) return;
+        const selectedId = selectedOptionInput.value; const correctId = activeQuestionData.id;
+        document.querySelectorAll('input[name="twg-mc-option"]').forEach(input => input.disabled = true);
+        document.getElementById('twg-mc-check-button').disabled = true;
+        if (selectedId == correctId) {
+            showFeedback('Correct!', 'correct');
+            setTimeout(() => switchMode('multiple-choice'), 2000);
+        } else {
+            const incorrectLabel = selectedOptionInput.nextElementSibling;
+            const correctOptionInput = document.querySelector(`input[name="twg-mc-option"][value="${correctId}"]`);
+            const correctLabel = correctOptionInput ? correctOptionInput.nextElementSibling : null;
+            showFeedback(`Incorrect. Correct answer: "${activeQuestionData.term}"`, 'incorrect');
+            if (incorrectLabel) { incorrectLabel.style.backgroundColor = '#ffe8e5'; incorrectLabel.style.borderColor = 'var(--twg-incorrect-color)'; }
+            if (correctLabel) { correctLabel.style.backgroundColor = '#e0f2e9'; correctLabel.style.borderColor = 'var(--twg-correct-color)'; }
+        }
+     }
+    function checkSpell() { /* ... logic ... */
+         const inputElement = document.getElementById('twg-spell-input');
+        if (!inputElement) return;
+        const userAnswer = inputElement.value.trim().toLowerCase();
+        const correctAnswer = activeQuestionData.term.toLowerCase();
+        const alternativeAnswers = activeQuestionData.alternativeAnswers.map(a => a.toLowerCase());
+        if (!userAnswer) { showFeedback('Please type the term.', 'incorrect'); return; }
+        if (userAnswer === correctAnswer || alternativeAnswers.includes(userAnswer)) {
+            showFeedback('Correct!', 'correct');
+            inputElement.disabled = true;
+            const checkButton = inputElement.closest('.twg-spell-input-container').querySelector('.twg-check-button');
+            if(checkButton) checkButton.disabled = true;
+            inputElement.value = '';
+            setTimeout(() => switchMode('spell'), 1500);
+        } else {
+            const feedbackMsg = activeQuestionData.errorFeedback || `Incorrect. Correct term: "${activeQuestionData.term}"`;
+            showFeedback(feedbackMsg, 'incorrect');
+            inputElement.select();
+        }
+     }
+
+    // --- Utility Function ---
+    function shuffleArray(array) { /* ... same shuffle logic ... */
+        for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [array[i], array[j]] = [array[j], array[i]]; }
+    }
+
+})(); // End of IIFE wrapper
+</script>
+
+</body>
+</html>
+        
