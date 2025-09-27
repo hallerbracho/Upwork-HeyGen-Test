@@ -42,7 +42,7 @@
     {
         "id": 6,
         "title": "Curso SCORM",
-        "description": "A practical guide to diagnosing and fixing common issues in commercial HVAC units.",
+        "description": "A practical guide to diagnosing and fixing common issues in commercial HVAC units uiuyihj ghjg.",
         "category": "HVAC",
         "thumbnailUrl": "https://picsum.photos/id/51/400/225",
         "videoUrl": "https://player.vimeo.com/video/76979871"
@@ -50,7 +50,15 @@
     {
         "id": 7,
         "title": "Curso SCORM 2",
-        "description": "A practical guide to diagnosing and fixing common issues in commercial HVAC units.",
+        "description": "A practical guide to diagnosing and fixing common issues in commercial HVAC units sdfsdf.",
+        "category": "Otra categoría",
+        "thumbnailUrl": "https://picsum.photos/id/51/400/225",
+        "videoUrl": "https://player.vimeo.com/video/76979871"
+    },
+    {
+        "id": 7,
+        "title": "Curso SCORM 3",
+        "description": "A practical guide to diagnosing and fixing common issues in commercial HVAC units wsxedcrfv tgbyhnujm.",
         "category": "Otra categoría",
         "thumbnailUrl": "https://picsum.photos/id/51/400/225",
         "videoUrl": "https://player.vimeo.com/video/76979871"
