@@ -3,7 +3,7 @@
         "id": 1,
         "title": "HVAC System Fundamentals",
         "description": "An introduction to the core principles of heating, ventilation, and air conditioning systems.",
-        "category": "HVAC",
+        "category": "Oil and Gas",
         "thumbnailUrl": "https://picsum.photos/id/21/400/225",
         "videoUrl": "https://player.vimeo.com/video/76979871"
     },
@@ -43,23 +43,7 @@
         "id": 6,
         "title": "Curso SCORM",
         "description": "A practical guide to diagnosing and fixing common issues in commercial HVAC units uiuyihj ghjg.",
-        "category": "HVAC",
-        "thumbnailUrl": "https://picsum.photos/id/51/400/225",
-        "videoUrl": "https://player.vimeo.com/video/76979871"
-    },
-    {
-        "id": 7,
-        "title": "Curso SCORM 2",
-        "description": "A practical guide to diagnosing and fixing common issues in commercial HVAC units sdfsdf.",
-        "category": "Otra categoría",
-        "thumbnailUrl": "https://picsum.photos/id/51/400/225",
-        "videoUrl": "https://player.vimeo.com/video/76979871"
-    },
-    {
-        "id": 8,
-        "title": "Curso SCORM 3",
-        "description": "A practical guide to diagnosing and fixing common issues in commercial HVAC units wsxedcrfv tgbyhnujm.",
-        "category": "Otra categoría",
+        "category": "Oil and Gas",
         "thumbnailUrl": "https://picsum.photos/id/51/400/225",
         "videoUrl": "https://player.vimeo.com/video/76979871"
     },
@@ -116,22 +100,6 @@
         "title": "Curso SCORM",
         "description": "A practical guide to diagnosing and fixing common issues in commercial HVAC units uiuyihj ghjg.",
         "category": "HVAC",
-        "thumbnailUrl": "https://picsum.photos/id/51/400/225",
-        "videoUrl": "https://player.vimeo.com/video/76979871"
-    },
-    {
-        "id": 17,
-        "title": "Curso SCORM 2",
-        "description": "A practical guide to diagnosing and fixing common issues in commercial HVAC units sdfsdf.",
-        "category": "Otra categoría",
-        "thumbnailUrl": "https://picsum.photos/id/51/400/225",
-        "videoUrl": "https://player.vimeo.com/video/76979871"
-    },
-    {
-        "id": 18,
-        "title": "Curso SCORM 3",
-        "description": "A practical guide to diagnosing and fixing common issues in commercial HVAC units wsxedcrfv tgbyhnujm.",
-        "category": "Otra categoría",
         "thumbnailUrl": "https://picsum.photos/id/51/400/225",
         "videoUrl": "https://player.vimeo.com/video/76979871"
     },
